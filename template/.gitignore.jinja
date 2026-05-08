@@ -1,0 +1,82 @@
+# ---------------------------------------------------------------------------
+# Cross-cutting
+# ---------------------------------------------------------------------------
+
+# Mise
+mise.local.toml
+mise.local.lock
+
+# fnox secrets
+.fnox/
+*.fnox.local
+
+# Generated outputs
+out/
+dist/
+
+# AI assistants
+.claude
+.skills
+.aider*
+
+# Editors and OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# env
+.env
+.env.local
+
+{% if has_go %}
+# ---------------------------------------------------------------------------
+# Go
+# ---------------------------------------------------------------------------
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+{{ project_name }}
+
+# Test binaries and coverage
+*.test
+*.out
+coverage.*
+*.coverprofile
+profile.cov
+
+# Go workspace
+go.work
+go.work.sum
+
+{% endif %}
+{% if has_dotnet %}
+# ---------------------------------------------------------------------------
+# .NET
+# ---------------------------------------------------------------------------
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+artifacts/
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+
+# Coverage
+*.cobertura.xml
+*.trx
+TestResults/
+
+{% endif %}

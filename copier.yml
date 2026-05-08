@@ -1,0 +1,143 @@
+# sdk-scaffold — language-agnostic Copier template for Pinguteca SDK libraries.
+#
+# Generates a new SDK repository with the cross-cutting tooling layer (mise,
+# Cocogitto, prek, Renovate, GitHub Actions, Octo STS, ADR scaffolding,
+# license) plus one or more language overlays (Go, .NET).
+#
+# Usage:
+#   copier copy gh:Pinguteca/sdk-scaffold ./my-sdk
+#   copier update     # later, to pull upstream improvements
+
+_subdirectory: template
+_min_copier_version: "9.4.0"
+_envops:
+  trim_blocks: true
+  lstrip_blocks: true
+  keep_trailing_newline: true
+
+# ---------------------------------------------------------------------------
+# Prompts
+# ---------------------------------------------------------------------------
+
+project_name:
+  type: str
+  help: |
+    Project name. Used in file paths, package coordinates, GitHub repo name.
+    Lowercase recommended; hyphens for word breaks (e.g. payments-sdk).
+
+description:
+  type: str
+  help: One-line project description (used in README, package metadata).
+
+vendor:
+  type: str
+  help: Display name of the publisher (copyright holder, package authors).
+  default: Pinguteca
+
+github_owner:
+  type: str
+  help: GitHub organization or user that owns this repo.
+  default: Pinguteca
+
+renovate_config:
+  type: str
+  help: |
+    Repository name of your shared Renovate preset (consumed via
+    "github>{owner}/{this}").
+  default: renovate-config
+
+identity_domain:
+  type: str
+  help: |
+    Email domain used to verify commit signatures via Sigstore gitsign.
+    Use a single regex-friendly domain (e.g. mycompany.com).
+  default: pinguteca.com
+
+license:
+  type: str
+  help: License the project ships under.
+  choices:
+    - MIT
+    - Apache-2.0
+    - BSD-2-Clause
+    - BSD-3-Clause
+    - GPL-3.0
+    - LGPL-3.0
+    - AGPL-3.0
+    - MPL-2.0
+    - none
+  default: Apache-2.0
+
+public_repo:
+  type: bool
+  help: |
+    Public GitHub repository? Enables OpenSSF Scorecard and harden-runner
+    free tier. Private repos need a paid harden-runner license.
+  default: false
+
+harden_runner:
+  type: bool
+  help: |
+    Include StepSecurity harden-runner in workflows. Free for public repos,
+    paid for private. Set false to skip (you can re-enable later).
+  default: true
+
+languages:
+  type: str
+  help: Language overlays to include. Comma-separated; pick one or more.
+  multiselect: true
+  choices:
+    - go
+    - dotnet
+  default:
+    - go
+
+# Convenience flags derived from `languages` (computed; not prompted).
+has_go:
+  type: bool
+  default: "{{ 'go' in languages }}"
+  when: false
+
+has_dotnet:
+  type: bool
+  default: "{{ 'dotnet' in languages }}"
+  when: false
+
+project_name_pascal:
+  type: str
+  default: "{{ project_name.replace('-', ' ').replace('_', ' ').title().replace(' ', '') }}"
+  when: false
+
+# ---------------------------------------------------------------------------
+# Exclusions: language overlays only emitted when their language is selected.
+# Patterns are evaluated as Jinja; an empty-string pattern excludes nothing.
+# ---------------------------------------------------------------------------
+_exclude:
+  - "copier.yml"
+  - "*.pyc"
+  - "__pycache__"
+  - ".git"
+  # Go overlay files
+  - "{% if not has_go %}go.mod{% endif %}"
+  - "{% if not has_go %}.golangci.yaml{% endif %}"
+  - "{% if not has_go %}.github/workflows/build-go.yml{% endif %}"
+  - "{% if not has_go %}.github/workflows/release-go.yml{% endif %}"
+  # .NET overlay files
+  - "{% if not has_dotnet %}Directory.Build.props{% endif %}"
+  - "{% if not has_dotnet %}Directory.Build.targets{% endif %}"
+  - "{% if not has_dotnet %}Directory.Packages.props{% endif %}"
+  - "{% if not has_dotnet %}global.json{% endif %}"
+  - "{% if not has_dotnet %}{{ project_name_pascal }}.slnx{% endif %}"
+  - "{% if not has_dotnet %}.github/workflows/build-dotnet.yml{% endif %}"
+  - "{% if not has_dotnet %}.github/workflows/release-dotnet.yml{% endif %}"
+  # Public-repo-only workflows
+  - "{% if not public_repo %}.github/workflows/scorecard.yml{% endif %}"
+
+_skip_if_exists:
+  - "CHANGELOG.md"
+  - "README.md"
+  - "docs/adr/0001-bootstrap.md"
+
+_answers_file: .copier-answers.yml
+
+_tasks: []

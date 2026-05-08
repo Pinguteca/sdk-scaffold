@@ -1,0 +1,52 @@
+# {{ project_name }}
+
+{{ description }}
+
+## Stack
+
+{% if has_go %}
+- **Go 1.26** with golangci-lint v2 (full ruleset; see `.golangci.yaml`)
+{% endif %}
+{% if has_dotnet %}
+- **.NET 10** with central package management and NuGet lockfiles
+{% endif %}
+- **mise** for tool versions and tasks (`mise.toml`, `mise.ci.toml`)
+- **Cocogitto** for conventional commits and semantic versioning
+- **prek** for pre-commit hooks (secrets, lockfiles, formatting)
+- **Renovate** consuming `github>{{ github_owner }}/{{ renovate_config }}`
+- **Octo STS** for short-lived per-workflow OIDC tokens
+
+## Getting started
+
+```bash
+mise install                # installs every tool defined in mise.toml
+prek install                # installs git hooks
+{% if has_dotnet %}
+mise run restore            # restore NuGet packages (also generates lockfile)
+{% endif %}
+mise run build              # build everything
+mise run test               # run tests
+```
+
+## Common tasks
+
+| Task | Alias | Description |
+|------|-------|-------------|
+| `mise run build` | `b` | Build the project |
+| `mise run test` | `t` | Run tests |
+| `mise run lint` |  | Run all linters |
+| `mise run secret:scan` | `ss` | Kingfisher secret scan |
+| `mise run release:sbom` | `rsbom` | Generate CycloneDX SBOM |
+| `mise run bump` |  | Tag the next semver version |
+
+## Release
+
+Push a conventional commit, then `mise run bump`. The release workflow
+takes over: SBOM, signatures,
+{% if has_go %}source archive,{% endif %}
+{% if has_dotnet %}NuGet packages,{% endif %}
+and a GitHub Release with SLSA L3 provenance.
+
+## License
+
+See [LICENSE](./LICENSE). {{ vendor }} holds copyright.

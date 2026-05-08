@@ -1,0 +1,96 @@
+[settings]
+experimental = true
+env_cache = true
+env_cache_ttl = "9h"
+install_before = "7d"
+pin = true
+lockfile = true
+locked = false
+prefer_offline = true
+disable_default_registry = true
+disable_backends = ["asdf", "vfox", "ubi"]
+
+[tools]
+"github:mongodb/kingfisher" = "1.98.0"
+cocogitto = "6.5.0"
+pinact = "3.9.2"
+prek = "0.3.9"
+syft = "1.42.4"
+{% if has_go %}
+go = "1.26.2"
+golangci-lint = "2.11.4"
+{% endif %}
+{% if has_dotnet %}
+dotnet = "10.0.203"
+{% endif %}
+
+[tasks."secret:scan"]
+run = "kingfisher scan"
+description = "Scan codebase for secrets with Kingfisher"
+alias = "ss"
+
+[tasks."secret:validate"]
+run = "kingfisher scan --validate"
+description = "Validate (and revoke) live secrets found by Kingfisher"
+alias = "sv"
+
+[tasks.bump]
+run = "cog bump --auto"
+description = "Calculate next version from conventional commits and tag"
+
+[tasks."release:sbom"]
+run = "syft scan dir:. -o cyclonedx-json=out/sbom/{{ project_name }}.cdx.json"
+description = "Generate CycloneDX SBOM for the workspace"
+alias = "rsbom"
+
+[tasks.lint]
+description = "Run all linting"
+depends = ["lint:*"]
+{% if has_go %}
+
+[tasks.build]
+run = "go build ./..."
+description = "Build all Go packages"
+alias = "b"
+
+[tasks.test]
+run = "go test ./..."
+description = "Run all Go tests"
+alias = "t"
+
+[tasks."lint:go"]
+run = "golangci-lint run ./... --fix"
+description = "Lint Go code with autofix"
+sources = ["**/*.go"]
+{% endif %}
+{% if has_dotnet %}
+
+[tasks.build]
+run = "dotnet build {{ project_name_pascal }}.slnx"
+description = "Build the .NET solution"
+alias = "b"
+
+[tasks.test]
+run = "dotnet test {{ project_name_pascal }}.slnx"
+description = "Run .NET tests"
+alias = "t"
+
+[tasks.restore]
+run = "dotnet restore {{ project_name_pascal }}.slnx"
+description = "Restore NuGet packages"
+alias = "r"
+
+[tasks.format]
+run = "dotnet format {{ project_name_pascal }}.slnx"
+description = "Format code via .editorconfig rules"
+alias = "fmt"
+
+[tasks."format:check"]
+run = "dotnet format {{ project_name_pascal }}.slnx --verify-no-changes"
+description = "Verify formatting without changes"
+alias = "fmtc"
+
+[tasks.pack]
+run = "dotnet pack {{ project_name_pascal }}.slnx --configuration Release --output out/packages"
+description = "Build NuGet packages into out/packages"
+{% endif %}

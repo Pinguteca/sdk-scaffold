@@ -1,0 +1,31 @@
+<Project>
+
+  <Target Name="ValidateSdkVersion" BeforeTargets="Build" Condition="'$(MSBuildProjectExtension)' == '.csproj'">
+    <Warning
+      Condition="!$(NETCoreSdkVersion.StartsWith('10.'))"
+      Text="Expected .NET 10 SDK; current is $(NETCoreSdkVersion). Pin via global.json or mise.toml." />
+  </Target>
+
+  <Target Name="GenerateBuildInfo"
+          AfterTargets="Build"
+          Condition="'$(Configuration)' == 'Release' and '$(IsPackable)' == 'true'">
+    <PropertyGroup>
+      <BuildInfoFile>$(IntermediateOutputPath)buildinfo.json</BuildInfoFile>
+    </PropertyGroup>
+    <ItemGroup>
+      <BuildInfoLines Include="{" />
+      <BuildInfoLines Include="  &quot;timestamp&quot;: &quot;$([System.DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ssZ'))&quot;," />
+      <BuildInfoLines Include="  &quot;commit&quot;: &quot;$(GITHUB_SHA)&quot;," />
+      <BuildInfoLines Include="  &quot;runNumber&quot;: &quot;$(GITHUB_RUN_NUMBER)&quot;," />
+      <BuildInfoLines Include="  &quot;configuration&quot;: &quot;$(Configuration)&quot;," />
+      <BuildInfoLines Include="  &quot;targetFramework&quot;: &quot;$(TargetFramework)&quot;" />
+      <BuildInfoLines Include="}" />
+    </ItemGroup>
+    <WriteLinesToFile File="$(BuildInfoFile)" Lines="@(BuildInfoLines)" Overwrite="true" />
+  </Target>
+
+  <Target Name="CleanArtifacts" AfterTargets="Clean">
+    <RemoveDir Directories="$(MSBuildThisFileDirectory)artifacts" Condition="Exists('$(MSBuildThisFileDirectory)artifacts')" />
+  </Target>
+
+</Project>
