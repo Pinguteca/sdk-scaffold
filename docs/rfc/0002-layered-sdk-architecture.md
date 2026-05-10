@@ -138,6 +138,24 @@ by the ecosystem.
 | Rust     | std, `core`, `alloc`. Tokio is Layer 3.                        |
 | Dart     | `dart:*`. `package:http` is Layer 3.                           |
 
+The Connect runtime is exempt across every language. Connect is the
+protocol the SDK speaks, not a feature of the SDK; an implementation
+without it cannot exist. The exemption covers the Connect client
+library itself plus its required wire-format dependencies (the
+protobuf runtime and any standard `google.rpc.*` types Connect uses
+to encode `RetryInfo`, `ErrorInfo`, etc.). Concretely:
+
+| Language | Connect-runtime exemption                                                              |
+|----------|----------------------------------------------------------------------------------------|
+| Go       | `connectrpc.com/connect`, `google.golang.org/protobuf`, `google.golang.org/genproto/googleapis/rpc` |
+| .NET     | `Connectrpc.Connect`, `Google.Protobuf`                                                |
+| TS/Node  | `@connectrpc/connect`, `@bufbuild/protobuf`                                            |
+| Java     | Connect Java runtime, `com.google.protobuf:protobuf-java`                              |
+| Kotlin   | Connect Kotlin runtime, `com.google.protobuf:protobuf-kotlin`                          |
+| Python   | Connect Python runtime, `protobuf`                                                     |
+| Rust     | Connect Rust runtime, `prost` (or `protobuf`)                                          |
+| Dart     | `package:connectrpc`, `package:protobuf`                                               |
+
 Anything else is Layer 3, even if widely used.
 
 ### Repository layout
