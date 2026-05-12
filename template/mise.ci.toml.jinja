@@ -56,10 +56,10 @@ description = "Build solution in Release without restoring"
 [tasks."ci:test"]
 # TUnit (or any Microsoft Testing Platform-backed runner) on .NET 10 SDK
 # rejects the legacy `dotnet test --logger trx` path. Invoke the test
-# project as the executable it is. Adjust the project path if the test
-# project lives somewhere other than the conventional tests/<Name>.Tests
-# location.
-run = "dotnet run --project tests/{{ project_name_pascal }}.Tests --configuration Release --no-build -- --report-trx --coverage"
+# project as the executable it is. The project path uses
+# `test_project_name` from the copier answers so consumers can match the
+# NuGet package id rather than the repo's PascalCase name.
+run = "dotnet run --project tests/{{ test_project_name }}.Tests --configuration Release --no-build -- --report-trx --coverage"
 description = "Run tests via MTP with TRX report and coverage"
 
 [tasks."ci:format-check"]

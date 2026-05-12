@@ -108,6 +108,17 @@ project_name_pascal:
   default: "{{ project_name.replace('-', ' ').replace('_', ' ').title().replace(' ', '') }}"
   when: false
 
+test_project_name:
+  type: str
+  help: |
+    .NET test project name (without the trailing .Tests). Override when
+    the test project should match the NuGet package id rather than the
+    repo's PascalCase project name. Example: package id is
+    Pinguteca.Sdk.Core, so this should be Pinguteca.Sdk.Core to produce
+    tests/Pinguteca.Sdk.Core.Tests.
+  default: "{{ project_name_pascal }}"
+  when: "{{ has_dotnet }}"
+
 # ---------------------------------------------------------------------------
 # Exclusions: language overlays only emitted when their language is selected.
 # Patterns are evaluated as Jinja; an empty-string pattern excludes nothing.

@@ -98,7 +98,7 @@ jobs:
       # See https://learn.microsoft.com/nuget/nuget-org/trusted-publishing
       - name: NuGet login (OIDC to short-lived API key)
         id: nuget-login
-        uses: NuGet/login@v1
+        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
         with:
           user: {{ '${{ env.NUGET_USER }}' }}
       - name: Push to NuGet.org
