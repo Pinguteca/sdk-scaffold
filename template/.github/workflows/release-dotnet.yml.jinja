@@ -90,17 +90,22 @@ jobs:
         id: hash
         run: |
           echo "hashes=$(base64 -w0 out/checksums.txt)" >> "$GITHUB_OUTPUT"
+      # NuGet Trusted Publishing: the job's GitHub OIDC token is exchanged
+      # for a 1-hour API key at push time. No long-lived secret in the
+      # repo. Policy on nuget.org binds this workflow file name to the
+      # publisher account; first push under a new package id creates the
+      # package owned by that account. NUGET_USER comes from mise.ci.toml.
+      # See https://learn.microsoft.com/nuget/nuget-org/trusted-publishing
+      - name: NuGet login (OIDC to short-lived API key)
+        id: nuget-login
+        uses: NuGet/login@v1
+        with:
+          user: {{ '${{ env.NUGET_USER }}' }}
       - name: Push to NuGet.org
-        env:
-          NUGET_API_KEY: {{ '${{ secrets.NUGET_API_KEY }}' }}
         run: |
-          if [ -z "${NUGET_API_KEY}" ]; then
-            echo "::warning::NUGET_API_KEY not set; skipping push. Configure NuGet Trusted Publishing or set the secret."
-            exit 0
-          fi
           dotnet nuget push "out/packages/*.nupkg" \
             --source "https://api.nuget.org/v3/index.json" \
-            --api-key "${NUGET_API_KEY}" \
+            --api-key "{{ '${{ steps.nuget-login.outputs.NUGET_API_KEY }}' }}" \
             --skip-duplicate
       - name: Create GitHub Release
         uses: softprops/action-gh-release@72f2c25fcb47643c292f7107632f7a47c1df5cd8 # v2.4.0

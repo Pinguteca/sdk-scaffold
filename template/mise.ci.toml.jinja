@@ -12,6 +12,16 @@ disable_backends = ["asdf", "vfox", "ubi"]
 
 [tools]
 "aqua:slsa-verifier" = "2.7.1"
+{% if has_dotnet %}
+
+[env]
+# Public profile/org name on nuget.org. Consumed by NuGet/login@v1 via the
+# `user` input in release-dotnet.yml. Gitted (public) rather than a GitHub
+# repo variable: it is not a secret, and keeping it in mise.ci.toml avoids
+# click-ops drift between repos. Override if your nuget.org account name
+# differs from `vendor`.
+NUGET_USER = "{{ vendor }}"
+{% endif %}
 
 [tasks."ci:git-config"]
 run = """
@@ -36,16 +46,21 @@ description = "Lint Go code in CI"
 {% if has_dotnet %}
 
 [tasks."ci:restore"]
-run = "dotnet restore {{ project_name_pascal }}.slnx --locked-mode"
-description = "Restore NuGet packages in locked mode"
+run = "dotnet restore {{ project_name_pascal }}.slnx --use-lock-file --locked-mode"
+description = "Restore NuGet packages in locked mode (fails on lockfile drift)"
 
 [tasks."ci:build"]
 run = "dotnet build {{ project_name_pascal }}.slnx --configuration Release --no-restore"
 description = "Build solution in Release without restoring"
 
 [tasks."ci:test"]
-run = "dotnet test {{ project_name_pascal }}.slnx --configuration Release --no-build --logger trx --collect:'XPlat Code Coverage'"
-description = "Run tests with TRX logger and Cobertura coverage"
+# TUnit (or any Microsoft Testing Platform-backed runner) on .NET 10 SDK
+# rejects the legacy `dotnet test --logger trx` path. Invoke the test
+# project as the executable it is. Adjust the project path if the test
+# project lives somewhere other than the conventional tests/<Name>.Tests
+# location.
+run = "dotnet run --project tests/{{ project_name_pascal }}.Tests --configuration Release --no-build -- --report-trx --coverage"
+description = "Run tests via MTP with TRX report and coverage"
 
 [tasks."ci:format-check"]
 run = "dotnet format {{ project_name_pascal }}.slnx --verify-no-changes"
