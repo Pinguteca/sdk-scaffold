@@ -101,6 +101,10 @@ jobs:
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
     with:
       base64-subjects: "{{ '${{ needs.release.outputs.hashes }}' }}"
-      upload-assets: true
+      # Keep provenance as a workflow artifact only. Attaching to the
+      # GitHub Release races whichever tool owns the release lifecycle
+      # (softprops today, possibly GoReleaser/JReleaser later) and SLSA
+      # verifiers pull provenance from the workflow run, not the release.
+      upload-assets: false
       provenance-name: provenance.intoto.jsonl
       private-repository: {{ "false" if public_repo else "true" }}
