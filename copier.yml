@@ -119,6 +119,18 @@ test_project_name:
   default: "{{ project_name_pascal }}"
   when: "{{ has_dotnet }}"
 
+nuget_user:
+  type: str
+  help: |
+    Nuget.org username of the INDIVIDUAL account that created the
+    Trusted Publishing policy. This is the policy creator, not the
+    package owner. NuGet's token-exchange endpoint requires the
+    creator's name even when the package itself belongs to an
+    organization. Leave matching `vendor` only if the creator is also
+    the owner.
+  default: "{{ vendor }}"
+  when: "{{ has_dotnet }}"
+
 # ---------------------------------------------------------------------------
 # Exclusions: language overlays only emitted when their language is selected.
 # Patterns are evaluated as Jinja; an empty-string pattern excludes nothing.

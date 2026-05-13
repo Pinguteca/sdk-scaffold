@@ -15,12 +15,14 @@ disable_backends = ["asdf", "vfox", "ubi"]
 {% if has_dotnet %}
 
 [env]
-# Public profile/org name on nuget.org. Consumed by NuGet/login@v1 via the
-# `user` input in release-dotnet.yml. Gitted (public) rather than a GitHub
-# repo variable: it is not a secret, and keeping it in mise.ci.toml avoids
-# click-ops drift between repos. Override if your nuget.org account name
-# differs from `vendor`.
-NUGET_USER = "{{ vendor }}"
+# Nuget.org username of the individual account that created the trusted-
+# publishing policy. NOT the package owner (the user or org that the
+# package belongs to). NuGet's token-exchange endpoint requires the
+# creators name even when the package itself is owned by an
+# organization. Consumed by NuGet/login@v1 via the `user` input in
+# release-dotnet.yml. Gitted (public) rather than a GitHub repo
+# variable; not a secret.
+NUGET_USER = "{{ nuget_user }}"
 {% endif %}
 
 [tasks."ci:git-config"]
