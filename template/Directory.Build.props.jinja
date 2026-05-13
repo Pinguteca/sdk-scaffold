@@ -22,6 +22,9 @@
 
     <Version Condition="'$(RELEASE_VERSION)' != ''">$(RELEASE_VERSION)</Version>
     <Version Condition="'$(RELEASE_VERSION)' == ''">0.0.0-dev</Version>
+
+    <DebugType>embedded</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <PropertyGroup>
