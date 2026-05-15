@@ -141,6 +141,7 @@ _exclude:
   - "__pycache__"
   - ".git"
   # Go overlay files
+  - "{% if not has_go %}go.work{% endif %}"
   - "{% if not has_go %}go.mod{% endif %}"
   - "{% if not has_go %}.golangci.yaml{% endif %}"
   - "{% if not has_go %}.github/workflows/build-go.yml{% endif %}"
