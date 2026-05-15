@@ -229,6 +229,10 @@ ceiling.
 - AWS builders' library, "Timeouts, retries, and backoff with
   jitter":
   https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/
+- Thom Wright, "Decorrelated jitter" (2024): simulation showing
+  full jitter beats decorrelated as the default and decorrelated
+  earns its place only under sustained load:
+  https://thomwright.co.uk/2024/04/24/decorrelated-jitter/
 - gRPC retry policy proposal:
   https://github.com/grpc/proposal/blob/master/A6-client-retries.md
 - google.rpc RetryInfo:
