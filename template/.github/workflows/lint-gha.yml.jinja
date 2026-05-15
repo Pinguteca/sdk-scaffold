@@ -35,7 +35,7 @@ jobs:
         with:
           egress-policy: audit
           disable-telemetry: "true"
-          disable-sudo-and-containers: "true"
+          disable-sudo: "true"
 {% endif %}
       - name: Optimize Git config for CI
         run: |
