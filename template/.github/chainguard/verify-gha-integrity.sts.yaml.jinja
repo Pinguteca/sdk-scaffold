@@ -1,5 +1,5 @@
 issuer: https://token.actions.githubusercontent.com
-subject_pattern: "repo:{{ github_owner }}/{{ project_name }}:pull_request"
+subject_pattern: "^repo:{{ github_owner }}/{{ project_name }}:(pull_request|ref:refs/heads/main)$"
 claim_pattern:
   workflow_ref: "{{ github_owner }}/{{ project_name }}/\\.github/workflows/verify-gha-integrity\\.yml@.*"
 permissions:
