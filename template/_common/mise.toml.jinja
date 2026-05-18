@@ -42,6 +42,18 @@ description = "Calculate next version from conventional commits and tag"
 run = "syft scan dir:. -o cyclonedx-json=out/sbom/{{ project_name }}.cdx.json"
 description = "Generate CycloneDX SBOM for the workspace"
 alias = "rsbom"
+sources = [
+{% if has_go %}
+    "go.mod",
+    "go.sum",
+{% endif %}
+{% if has_dotnet %}
+    "**/*.csproj",
+    "**/packages.lock.json",
+    "Directory.Packages.props",
+{% endif %}
+]
+outputs = ["out/sbom/**/*"]
 
 [tasks.lint]
 description = "Run all linting"
@@ -69,16 +81,48 @@ sources = ["**/*.go"]
 run = "dotnet build {{ project_name_pascal }}.slnx"
 description = "Build the .NET solution"
 alias = "b"
+sources = [
+    "src/**/*.cs",
+    "src/**/*.csproj",
+    "{{ project_name_pascal }}.slnx",
+    "Directory.Build.props",
+    "Directory.Build.targets",
+    "Directory.Packages.props",
+    "global.json",
+]
+outputs = ["src/**/bin/**/*", "src/**/obj/**/*"]
 
 [tasks.test]
 run = "dotnet test {{ project_name_pascal }}.slnx"
 description = "Run .NET tests"
 alias = "t"
+sources = [
+    "src/**/*.cs",
+    "tests/**/*.cs",
+    "test/**/*.cs",
+    "src/**/*.csproj",
+    "tests/**/*.csproj",
+    "test/**/*.csproj",
+    "{{ project_name_pascal }}.slnx",
+    "Directory.Build.props",
+    "Directory.Build.targets",
+    "Directory.Packages.props",
+]
+outputs = ["tests/**/TestResults/**/*", "test/**/TestResults/**/*"]
 
 [tasks.restore]
 run = "dotnet restore {{ project_name_pascal }}.slnx"
 description = "Restore NuGet packages"
 alias = "r"
+sources = [
+    "src/**/*.csproj",
+    "src/**/packages.lock.json",
+    "{{ project_name_pascal }}.slnx",
+    "Directory.Packages.props",
+    "global.json",
+    "nuget.config",
+]
+outputs = ["src/**/obj/project.assets.json"]
 
 [tasks.format]
 run = "dotnet format {{ project_name_pascal }}.slnx"
@@ -93,4 +137,14 @@ alias = "fmtc"
 [tasks.pack]
 run = "dotnet pack {{ project_name_pascal }}.slnx --configuration Release --output out/packages"
 description = "Build NuGet packages into out/packages"
+sources = [
+    "src/**/*.cs",
+    "src/**/*.csproj",
+    "src/**/PACKAGE.md",
+    "{{ project_name_pascal }}.slnx",
+    "Directory.Build.props",
+    "Directory.Build.targets",
+    "Directory.Packages.props",
+]
+outputs = ["out/packages/**/*"]
 {% endif %}
