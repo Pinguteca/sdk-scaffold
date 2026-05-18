@@ -50,10 +50,29 @@ description = "Lint Go code in CI"
 [tasks."ci:restore"]
 run = "dotnet restore {{ project_name_pascal }}.slnx --use-lock-file --locked-mode"
 description = "Restore NuGet packages in locked mode (fails on lockfile drift)"
+sources = [
+    "src/**/*.csproj",
+    "src/**/packages.lock.json",
+    "{{ project_name_pascal }}.slnx",
+    "Directory.Packages.props",
+    "global.json",
+    "nuget.config",
+]
+outputs = ["src/**/obj/project.assets.json"]
 
 [tasks."ci:build"]
 run = "dotnet build {{ project_name_pascal }}.slnx --configuration Release --no-restore"
 description = "Build solution in Release without restoring"
+sources = [
+    "src/**/*.cs",
+    "src/**/*.csproj",
+    "{{ project_name_pascal }}.slnx",
+    "Directory.Build.props",
+    "Directory.Build.targets",
+    "Directory.Packages.props",
+    "global.json",
+]
+outputs = ["src/**/bin/Release/**/*"]
 
 [tasks."ci:test"]
 # TUnit (or any Microsoft Testing Platform-backed runner) on .NET 10 SDK
@@ -71,4 +90,13 @@ description = "Verify formatting in CI"
 [tasks."ci:pack"]
 run = "dotnet pack {{ project_name_pascal }}.slnx --configuration Release --no-build --output out/packages"
 description = "Build NuGet packages for release"
+sources = [
+    "src/**/bin/Release/**/*.dll",
+    "src/**/*.csproj",
+    "src/**/PACKAGE.md",
+    "Directory.Build.props",
+    "Directory.Build.targets",
+    "Directory.Packages.props",
+]
+outputs = ["out/packages/**/*"]
 {% endif %}
