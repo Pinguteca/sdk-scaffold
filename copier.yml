@@ -132,7 +132,14 @@ nuget_user:
   when: "{{ has_dotnet }}"
 
 # ---------------------------------------------------------------------------
-# Exclusions: language overlays only emitted when their language is selected.
+# Exclusions
+#
+# Template files are grouped under per-overlay directories (_common, _go,
+# _dotnet, and future per-language overlays) so the source tree stays
+# readable as more languages land. A copier _task runs `_scripts/post_gen.py`
+# after rendering to flatten the overlays into the destination root, so the
+# consumer's repo sees a flat layout.
+#
 # Patterns are evaluated as Jinja; an empty-string pattern excludes nothing.
 # ---------------------------------------------------------------------------
 _exclude:
@@ -140,22 +147,12 @@ _exclude:
   - "*.pyc"
   - "__pycache__"
   - ".git"
-  # Go overlay files
-  - "{% if not has_go %}go.work{% endif %}"
-  - "{% if not has_go %}go.mod{% endif %}"
-  - "{% if not has_go %}.golangci.yaml{% endif %}"
-  - "{% if not has_go %}.github/workflows/build-go.yml{% endif %}"
-  - "{% if not has_go %}.github/workflows/release-go.yml{% endif %}"
-  # .NET overlay files
-  - "{% if not has_dotnet %}Directory.Build.props{% endif %}"
-  - "{% if not has_dotnet %}Directory.Build.targets{% endif %}"
-  - "{% if not has_dotnet %}Directory.Packages.props{% endif %}"
-  - "{% if not has_dotnet %}global.json{% endif %}"
-  - "{% if not has_dotnet %}{{ project_name_pascal }}.slnx{% endif %}"
-  - "{% if not has_dotnet %}.github/workflows/build-dotnet.yml{% endif %}"
-  - "{% if not has_dotnet %}.github/workflows/release-dotnet.yml{% endif %}"
-  # Public-repo-only workflows
-  - "{% if not public_repo %}.github/workflows/scorecard.yml{% endif %}"
+  - "_scripts"
+  # Language overlays - drop the entire directory when the language is not selected
+  - "{% if not has_go %}_go{% endif %}"
+  - "{% if not has_dotnet %}_dotnet{% endif %}"
+  # Public-repo-only workflows (rendered under _common before flattening)
+  - "{% if not public_repo %}_common/.github/workflows/scorecard.yml{% endif %}"
 
 _skip_if_exists:
   - "CHANGELOG.md"
@@ -164,4 +161,5 @@ _skip_if_exists:
 
 _answers_file: .copier-answers.yml
 
-_tasks: []
+_tasks:
+  - "python {{ _copier_conf.src_path }}/_scripts/post_gen.py"
