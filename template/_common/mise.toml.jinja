@@ -25,12 +25,12 @@ dotnet = "10.0.203"
 {% endif %}
 
 [tasks."secret:scan"]
-run = "kingfisher scan . --no-validate --redact"
+run = "kingfisher scan . --no-validate --redact --format json --output kingfisher-results.json"
 description = "Scan codebase for secrets with Kingfisher"
 alias = "ss"
 
 [tasks."secret:validate"]
-run = "kingfisher scan . --redact"
+run = "kingfisher scan . --redact --validation-rps 2"
 description = "Validate (and revoke) live secrets found by Kingfisher"
 alias = "sv"
 
