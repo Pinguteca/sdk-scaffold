@@ -298,6 +298,39 @@ Hits skip the entire inner chain (no auth token attached, no
 retry budget consumed, no breaker statistics updated). Misses
 fall through and the inner chain runs normally.
 
+### Per-protocol layer placement
+
+The composition diagram above is the logical position; the
+physical layer where caching attaches splits by wire protocol.
+
+- **Connect-protocol SDKs** (Go, TS, Swift, Kotlin, Dart, Python)
+  attach caching at the **HTTP transport layer**: wrap an
+  `http.RoundTripper` / `fetch` / `URLSession` / equivalent. When
+  the consumer opts read-only methods into Connect's HTTP GET
+  mode for `NO_SIDE_EFFECTS`, the request becomes a real HTTP GET
+  with standard `Cache-Control`, `ETag`, and `If-None-Match`
+  semantics. Any cache in the network path (CDN, reverse proxy,
+  browser) can also cache the same response without per-consumer
+  configuration; the SDK companion just adds a local layer for
+  consumers without external caches.
+- **gRPC-protocol SDKs** (.NET, Java, Rust) attach caching at the
+  **client interceptor layer**: wrap the unary call inside the
+  SDK. gRPC over HTTP/2 is always POST, response status codes are
+  always HTTP 200 with gRPC status in trailers, and bodies are
+  length-prefixed binary frames. No HTTP cache in the network can
+  cache gRPC traffic; the interceptor is the only path to a cache
+  hit. Negative caching maps to gRPC `NotFound` rather than
+  HTTP 404; ETag uses a metadata entry rather than an HTTP header.
+
+Cache semantics (TTL, SWR, invalidation, tenant scope,
+single-flight, streaming pass-through) are identical across both
+shapes. The split affects only where in the stack the cache lives
+and what surface it exposes (RoundTripper vs interceptor).
+
+A future SDK adopting a third protocol picks its layer by the
+same rule: protocol carries cacheable HTTP semantics -> transport
+layer; protocol does not -> interceptor layer.
+
 ### `Cache` store interface
 
 Every SDK exposes a minimal store interface:
@@ -393,6 +426,23 @@ default-cap rationale.
 - SHA-256 key hashing costs a few microseconds per call. Hot
   loops doing millions of cached calls per second see it. Not
   the typical SDK workload.
+- **Response metadata is lossy on cached hits.** Cached entries
+  store the response body and status, but the headers and
+  trailers attached to a cached return are best-effort: gRPC SDKs
+  cannot replay original trailers through the `AsyncUnaryCall`
+  shape, and HTTP SDKs do not preserve every header. Consumers
+  needing correlation between cached and live responses route
+  identifiers through the logging companion (RFC 0010) rather
+  than through response metadata.
+- **Hand-rolled single-flight in gRPC SDKs has a tiny race
+  window.** Connect-protocol SDKs can lean on the underlying
+  HTTP client's built-in coalescing or a community singleflight
+  primitive (Go's `golang.org/x/sync/singleflight`). gRPC-protocol
+  SDKs hand-roll a per-key semaphore map; concurrent callers
+  briefly racing on key creation may end up on different
+  semaphores, splitting the singleflight collapse for one extra
+  backend call. Acceptable for v1; revisit if benchmarks show
+  contention.
 
 ## Rationale and alternatives
 
