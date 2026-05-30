@@ -1,5 +1,12 @@
 # sdk-scaffold
 
+> [!WARNING]
+> **Work in progress, not production-ready.** APIs, scaffold layout,
+> and template variables are unstable and may change without notice
+> before the first stable release. External pull requests are not
+> accepted yet while the foundations stabilise. Issues are welcome:
+> open one before sending code if you spot a bug or want a feature.
+
 Language-agnostic Copier template for Pinguteca SDK libraries. Generates a
 new SDK repository with the cross-cutting tooling layer plus one or more
 language overlays.
