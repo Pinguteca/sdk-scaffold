@@ -23,6 +23,9 @@ golangci-lint = "2.11.4"
 {% if has_dotnet %}
 dotnet = "10.0.203"
 {% endif %}
+{% if has_dart %}
+dart = "3.12.1"
+{% endif %}
 
 [tasks."secret:scan"]
 run = "kingfisher scan . --no-validate --redact --format json --output kingfisher-results.json"
@@ -51,6 +54,10 @@ sources = [
     "**/*.csproj",
     "**/packages.lock.json",
     "Directory.Packages.props",
+{% endif %}
+{% if has_dart %}
+    "pubspec.yaml",
+    "pubspec.lock",
 {% endif %}
 ]
 outputs = ["out/sbom/**/*"]
@@ -147,4 +154,45 @@ sources = [
     "Directory.Packages.props",
 ]
 outputs = ["out/packages/**/*"]
+{% endif %}
+{% if has_dart %}
+
+[tasks.get]
+run = "dart pub get"
+description = "Resolve Dart dependencies into pubspec.lock"
+alias = "g"
+sources = ["pubspec.yaml"]
+outputs = ["pubspec.lock"]
+
+[tasks.test]
+run = "dart test"
+description = "Run Dart tests"
+alias = "t"
+sources = ["**/*.dart", "pubspec.yaml", "dart_test.yaml"]
+outputs = ["coverage/**/*"]
+
+[tasks.analyze]
+run = "dart analyze"
+description = "Run the Dart static analyzer"
+alias = "a"
+sources = ["**/*.dart", "analysis_options.yaml"]
+
+[tasks.format]
+run = "dart format ."
+description = "Format Dart code in place"
+alias = "fmt"
+
+[tasks."format:check"]
+run = "dart format --output=none --set-exit-if-changed ."
+description = "Verify Dart formatting without changes"
+alias = "fmtc"
+
+[tasks."lint:dart"]
+run = "dart analyze --fatal-infos --fatal-warnings"
+description = "Treat analyzer infos and warnings as failures"
+sources = ["**/*.dart", "analysis_options.yaml"]
+
+[tasks.publish-dry]
+run = "dart pub publish --dry-run"
+description = "Verify publishability without uploading"
 {% endif %}

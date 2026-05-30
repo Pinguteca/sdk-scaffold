@@ -89,6 +89,7 @@ languages:
   choices:
     - go
     - dotnet
+    - dart
   default:
     - go
 
@@ -101,6 +102,16 @@ has_go:
 has_dotnet:
   type: bool
   default: "{{ 'dotnet' in languages }}"
+  when: false
+
+has_dart:
+  type: bool
+  default: "{{ 'dart' in languages }}"
+  when: false
+
+project_name_snake:
+  type: str
+  default: "{{ project_name.replace('-', '_').lower() }}"
   when: false
 
 project_name_pascal:
@@ -151,6 +162,7 @@ _exclude:
   # Language overlays - drop the entire directory when the language is not selected
   - "{% if not has_go %}_go{% endif %}"
   - "{% if not has_dotnet %}_dotnet{% endif %}"
+  - "{% if not has_dart %}_dart{% endif %}"
   # Public-repo-only workflows (rendered under _common before flattening)
   - "{% if not public_repo %}_common/.github/workflows/scorecard.yml{% endif %}"
 

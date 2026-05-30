@@ -100,3 +100,26 @@ sources = [
 ]
 outputs = ["out/packages/**/*"]
 {% endif %}
+{% if has_dart %}
+
+[tasks."ci:get"]
+run = "dart pub get --enforce-lockfile"
+description = "Restore Dart dependencies in locked mode (fails on pubspec.lock drift)"
+sources = ["pubspec.yaml", "pubspec.lock"]
+outputs = [".dart_tool/package_config.json"]
+
+[tasks."ci:analyze"]
+run = "dart analyze --fatal-infos --fatal-warnings"
+description = "Run the Dart analyzer with infos and warnings as failures"
+sources = ["**/*.dart", "analysis_options.yaml"]
+
+[tasks."ci:test"]
+run = "dart test --reporter=expanded --coverage=coverage"
+description = "Run Dart tests with coverage collection"
+sources = ["**/*.dart", "pubspec.yaml", "dart_test.yaml"]
+outputs = ["coverage/**/*"]
+
+[tasks."ci:format-check"]
+run = "dart format --output=none --set-exit-if-changed ."
+description = "Verify Dart formatting in CI"
+{% endif %}

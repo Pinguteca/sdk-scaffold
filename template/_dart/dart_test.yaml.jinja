@@ -1,0 +1,11 @@
+platforms:
+  - vm
+
+# Conservative concurrency default: avoids flakiness in async-heavy
+# RPC tests where shared state across isolates leaks easily.
+concurrency: 4
+
+reporter: expanded
+
+# Fail the run if a test hangs.
+timeout: 60s

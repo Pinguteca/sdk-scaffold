@@ -80,3 +80,18 @@ artifacts/
 TestResults/
 
 {% endif %}
+{% if has_dart %}
+# ---------------------------------------------------------------------------
+# Dart
+# ---------------------------------------------------------------------------
+.dart_tool/
+.packages
+build/
+coverage/
+doc/api/
+
+# Library packages commit pubspec.lock; applications may want to
+# uncomment the line below to ignore it.
+# pubspec.lock
+
+{% endif %}

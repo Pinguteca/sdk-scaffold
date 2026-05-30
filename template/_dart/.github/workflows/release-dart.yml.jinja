@@ -1,0 +1,129 @@
+name: Release (Dart)
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: {{ '${{ github.workflow }}-${{ github.ref }}' }}
+  cancel-in-progress: false
+
+env:
+  CI: "true"
+  MISE_ENV: ci
+
+jobs:
+  release:
+    name: Publish to pub.dev
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      id-token: write
+      contents: write
+    outputs:
+      hashes: {{ '${{ steps.hash.outputs.hashes }}' }}
+    steps:
+{% if harden_runner %}
+      - name: Harden Runner
+        uses: step-security/harden-runner@f808768d1510423e83855289c910610ca9b43176 # v2.17.0
+        with:
+          egress-policy: audit
+          disable-telemetry: "true"
+          disable-sudo: "true"
+{% endif %}
+      - name: Obtain release token
+        id: octo-sts
+        uses: octo-sts/action@f603d3be9d8dd9871a265776e625a27b00effe05 # v1.1.1
+        with:
+          scope: {{ github_owner }}/{{ project_name }}
+          identity: release
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          token: {{ '${{ steps.octo-sts.outputs.token }}' }}
+      - name: Install mise and tools
+        uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
+        with:
+          experimental: true
+        env:
+          GITHUB_TOKEN: {{ '${{ steps.octo-sts.outputs.token }}' }}
+      - name: Resolve version from tag
+        id: version
+        run: |
+          TAG="{{ '${{ github.ref_name }}' }}"
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+      - name: Stamp pubspec version
+        env:
+          VERSION: {{ '${{ steps.version.outputs.version }}' }}
+        # Replace the placeholder dev version with the tag-derived
+        # one. dart pub refuses to publish 0.0.0-dev so this is
+        # mandatory.
+        run: |
+          sed -i "s/^version: .*/version: ${VERSION}/" pubspec.yaml
+      - name: Fetch dependencies
+        run: mise run ci:get
+      - name: Dry-run publish
+        # Catches manifest issues before the OIDC token is consumed.
+        run: dart pub publish --dry-run
+      # pub.dev Trusted Publishing: setup-dart exchanges the
+      # workflow's OIDC token for a short-lived publish credential
+      # at push time. The pub.dev publisher must list this workflow
+      # under its trusted publishers.
+      # See https://dart.dev/tools/pub/automated-publishing
+      - name: Publish to pub.dev
+        uses: dart-lang/setup-dart@2c91d11a90f04a98ade4216df66e1ce75c0a26b3 # v1.7.0
+      - name: Run dart pub publish
+        run: dart pub publish --force
+      - name: Generate SBOM
+        run: mise run release:sbom
+      - name: Compute checksums
+        run: |
+          mkdir -p out
+          sha256sum pubspec.yaml out/sbom/{{ project_name }}.cdx.json > out/checksums.txt 2>/dev/null || true
+      - name: Install cosign
+        uses: sigstore/cosign-installer@cad07c2e89fa2edd6e2d7bab4c1aa38e53f76003 # v4.1.1
+      - name: Sign checksums
+        run: |
+          cd out
+          cosign sign-blob \
+            --bundle=checksums.txt.sigstore.json \
+            --yes \
+            checksums.txt
+      - name: Compute SLSA subject hashes
+        id: hash
+        run: |
+          echo "hashes=$(base64 -w0 out/checksums.txt)" >> "$GITHUB_OUTPUT"
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: {{ '${{ steps.octo-sts.outputs.token }}' }}
+          TAG: {{ '${{ github.ref_name }}' }}
+        run: |
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release $TAG already exists; skipping create."
+            exit 0
+          fi
+          gh release create "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --generate-notes \
+            out/sbom/{{ project_name }}.cdx.json \
+            out/checksums.txt \
+            out/checksums.txt.sigstore.json
+
+  provenance:
+    name: SLSA provenance
+    needs: release
+    permissions:
+      actions: read
+      id-token: write
+      contents: write
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
+    with:
+      base64-subjects: "{{ '${{ needs.release.outputs.hashes }}' }}"
+      upload-assets: false
+      provenance-name: provenance.intoto.jsonl
+      private-repository: {{ "false" if public_repo else "true" }}
