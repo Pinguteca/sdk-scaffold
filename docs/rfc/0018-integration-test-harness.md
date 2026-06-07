@@ -15,7 +15,7 @@
 Pin the shape of every SDK's integration test surface: which server
 to mock against, how to pin its image, what `.proto` contract each
 SDK must exercise, and which interceptor behaviours must be covered
-end-to-end. The server is FauxRPC, distributed as a Docker image.
+end-to-end. The server is FauxRPC, distributed as an OCI image.
 The proto contract is per-SDK; the harness pattern is shared.
 
 ## Motivation
@@ -50,10 +50,12 @@ Three questions need cross-SDK answers:
 ### Server choice
 
 FauxRPC. Descriptor-driven, single binary, one port serves gRPC +
-gRPC-Web + Connect + REST. Distributed as `sudorandom/fauxrpc` on
-Docker Hub. Has a Go `testcontainers` integration that validates
-the orchestration pattern; other languages reproduce it through
-their own container-orchestration idiom.
+gRPC-Web + Connect + REST. Distributed as the OCI image
+`sudorandom/fauxrpc` on Docker Hub; the image runs under any
+OCI-compatible runtime (Docker, Podman, containerd, etc.). Has a
+Go `testcontainers` integration that validates the orchestration
+pattern; other languages reproduce it through their own
+container-orchestration idiom.
 
 Alternatives considered and rejected:
 
@@ -70,6 +72,8 @@ Every SDK pins FauxRPC by SHA-256 digest:
 
 ```
 docker.io/sudorandom/fauxrpc@sha256:<hex>
+# (docker.io is the registry hostname Docker Hub publishes under;
+#  resolves identically through podman, containerd, and others)
 ```
 
 Never by tag. Never `:latest`. Each SDK picks its own digest; the
@@ -140,8 +144,8 @@ when the SDK ships the feature; do not gate the harness on them.
 
 Integration tests are additive to unit tests, not a replacement.
 Unit tests stay the primary coverage mechanism (fast, deterministic,
-no Docker). Integration tests catch wire-level drift that unit
-tests cannot see.
+no container runtime). Integration tests catch wire-level drift
+that unit tests cannot see.
 
 Integration tests assert SDK behaviour. They do NOT assert FauxRPC
 behaviour; FauxRPC is upstream, its bugs are upstream's problem.
@@ -156,8 +160,8 @@ How the container boots is each SDK's call:
 |--------|-------------------------------------------------------------------------------|
 | .NET   | Aspire AppHost via `TUnit.Aspire`; container resource with bind-mounted `.binpb` |
 | Go     | `fauxrpc/testcontainers` package, or raw testcontainers-go                    |
-| Dart   | TBD; likely raw docker invocation from a test fixture until a Dart           |
-|        | testcontainers equivalent matures                                            |
+| Dart   | TBD; likely raw OCI runtime invocation (docker or podman CLI) from a         |
+|        | test fixture until a Dart testcontainers equivalent matures                  |
 
 The RFC does not pin orchestration tooling because each language's
 fixture ergonomics differ. What is pinned: the image source, the
@@ -210,9 +214,10 @@ trigger policy.
 
 ## Drawbacks
 
-Docker is a hard dependency for running the suite locally. No
-in-process fallback. Contributors without Docker cannot run the
-integration tests, only the unit suite.
+An OCI-compatible container runtime is a hard dependency for
+running the suite locally. No in-process fallback. Contributors
+without a runtime installed (Docker, Podman, or equivalent) cannot
+run the integration tests, only the unit suite.
 
 Container startup adds ~1-5s per test class to wall-clock time.
 Acceptable for nightly or per-PR-on-relevant-paths; not acceptable
