@@ -64,6 +64,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          # Check out the branch itself, not the PR merge commit, so the
+          # optimized SVGs can be pushed back to it.
+          ref: {{ '${{ github.head_ref || github.ref_name }}' }}
+          # SVGO is third-party code; keep the token out of .git/config and
+          # hand it only to the push below.
           persist-credentials: false
           token: {{ '${{ steps.octo-sts.outputs.token }}' }}
       - name: Set up Node
@@ -75,11 +80,17 @@ jobs:
           npm config set -g minimumReleaseAge 30240
           npx --yes svgo@4 --multipass --recursive .
       - name: Install gitsign
-        uses: chainguard-dev/actions/setup-gitsign@5a9aa9e1e5d2b6cf78b38b68e7db7c3df9e1c2db # main
-      - name: Auto-commit optimized SVGs
-        uses: stefanzweifel/git-auto-commit-action@b863ae1933cb653a53c021fe36dbb774e1fb9403 # v6.0.1
-        with:
-          commit_message: "chore: optimize svgs"
-          file_pattern: "**/*.svg"
-          commit_user_name: "{{ vendor }} Bot"
-          commit_user_email: "bot@{{ identity_domain }}"
+        uses: chainguard-dev/actions/setup-gitsign@84b1be4c638f12d4256ddddef17af98853b6d0d9 # v1.6.40
+      - name: Commit optimized SVGs
+        env:
+          TOKEN: {{ '${{ steps.octo-sts.outputs.token }}' }}
+          BRANCH: {{ '${{ github.head_ref || github.ref_name }}' }}
+        run: |
+          git add -- '*.svg'
+          git diff --cached --quiet && exit 0
+          git -c user.name="{{ vendor }} Bot" -c user.email="bot@{{ identity_domain }}" \
+            commit -m "chore: optimize svgs"
+          auth=$(printf 'x-access-token:%s' "$TOKEN" | base64 -w0)
+          echo "::add-mask::${auth}"
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic ${auth}" \
+            push origin "HEAD:refs/heads/${BRANCH}"
