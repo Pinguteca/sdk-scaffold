@@ -51,7 +51,7 @@ jobs:
           persist-credentials: false
           token: {{ '${{ steps.octo-sts.outputs.token }}' }}
       - name: Install mise and tools
-        uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
         with:
           experimental: true
           install: true
@@ -85,7 +85,7 @@ jobs:
       # under its trusted publishers.
       # See https://dart.dev/tools/pub/automated-publishing
       - name: Publish to pub.dev
-        uses: dart-lang/setup-dart@2c91d11a90f04a98ade4216df66e1ce75c0a26b3 # v1.7.0
+        uses: dart-lang/setup-dart@6afc89df92d6eb3834022f73cd65adc8cdfcb92d # v1.8.1
       - name: Run dart pub publish
         run: dart pub publish --force
       - name: Generate SBOM
