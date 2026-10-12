@@ -19,15 +19,14 @@
 {% endif %}
 - **mise** for tool versions and tasks (`mise.toml`, `mise.ci.toml`)
 - **Cocogitto** for conventional commits and semantic versioning
-- **prek** for pre-commit hooks (secrets, lockfiles, formatting)
+- **hk** for git hooks (secrets, lockfiles, formatting)
 - **Renovate** consuming `github>{{ github_owner }}/{{ renovate_config }}`
 - **Octo STS** for short-lived per-workflow OIDC tokens
 
 ## Getting started
 
 ```bash
-mise install                # installs every tool defined in mise.toml
-prek install                # installs git hooks
+mise install                # installs the pinned tools and the hk git hooks
 {% if has_dotnet %}
 mise run restore            # restore NuGet packages (also generates lockfile)
 {% endif %}

@@ -1,7 +1,7 @@
 # sdk-scaffold — language-agnostic Copier template for Pinguteca SDK libraries.
 #
 # Generates a new SDK repository with the cross-cutting tooling layer (mise,
-# Cocogitto, prek, Renovate, GitHub Actions, Octo STS, ADR scaffolding,
+# Cocogitto, hk, Renovate, GitHub Actions, Octo STS, ADR scaffolding,
 # license) plus one or more language overlays (Go, .NET).
 #
 # Usage:

@@ -14,7 +14,7 @@ language overlays.
 ## What you get
 
 - **Cross-cutting:** mise (tool versions and tasks), Cocogitto (conventional
-  commits), prek (pre-commit hooks), Renovate, secret scanning (Kingfisher),
+  commits), hk (git hooks), Renovate, secret scanning (Kingfisher),
   GitHub Actions Pinact, Octo STS per-workflow OIDC identities, OpenSSF
   Scorecard (public repos), gitsign commit verification, image/SVG
   optimization, ADR scaffolding, LICENSE menu.
