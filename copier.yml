@@ -155,15 +155,20 @@ _exclude:
   # Public-repo-only workflows (rendered under _common before flattening)
   - "{% if not public_repo %}_common/.github/workflows/scorecard.yml{% endif %}"
   # Owned by the instance after the first copy: the changelog is generated,
-  # the README is per-instance, and an accepted ADR is immutable. The
+  # the README is per-instance, an accepted ADR is immutable, and the Go
+  # module files list the instance's own modules and dependencies. The
   # root-anchored paths match template versions older than the overlay
   # layout, which copier renders as the update base.
   - "{% if _copier_operation == 'update' %}_common/CHANGELOG.md{% endif %}"
   - "{% if _copier_operation == 'update' %}_common/README.md{% endif %}"
   - "{% if _copier_operation == 'update' %}_common/docs/adr/0000-bootstrap.md{% endif %}"
+  - "{% if _copier_operation == 'update' %}_go/go.mod{% endif %}"
+  - "{% if _copier_operation == 'update' %}_go/go.work{% endif %}"
   - "{% if _copier_operation == 'update' %}/CHANGELOG.md{% endif %}"
   - "{% if _copier_operation == 'update' %}/README.md{% endif %}"
   - "{% if _copier_operation == 'update' %}/docs/adr/0000-bootstrap.md{% endif %}"
+  - "{% if _copier_operation == 'update' %}/go.mod{% endif %}"
+  - "{% if _copier_operation == 'update' %}/go.work{% endif %}"
 
 _skip_if_exists:
   - "CHANGELOG.md"
