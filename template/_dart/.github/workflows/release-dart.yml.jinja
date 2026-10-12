@@ -130,6 +130,7 @@ jobs:
       actions: read # SLSA generator reads this run's metadata
       id-token: write # OIDC token signs the provenance
       contents: write # upload the provenance to the GitHub Release
+    # The generator rejects SHA pins; it must be a tag (see .github/pinact.yml).
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
     with:
       base64-subjects: "{{ '${{ needs.release.outputs.hashes }}' }}"
