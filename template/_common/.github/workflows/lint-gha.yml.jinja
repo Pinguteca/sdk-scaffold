@@ -28,6 +28,7 @@ jobs:
     timeout-minutes: 15
     permissions:
       security-events: write
+      id-token: write
     steps:
 {% if harden_runner %}
       - name: Harden Runner
@@ -41,6 +42,12 @@ jobs:
         run: |
           git config --global core.compression 0
           git config --global core.fsync -all
+      - name: Obtain token
+        id: octo-sts
+        uses: octo-sts/action@f603d3be9d8dd9871a265776e625a27b00effe05 # v1.1.1
+        with:
+          scope: {{ github_owner }}/{{ project_name }}
+          identity: lint-gha
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -50,6 +57,7 @@ jobs:
             .github/zizmor.yml
           sparse-checkout-cone-mode: false
           filter: "blob:none"
+          token: {{ '${{ steps.octo-sts.outputs.token }}' }}
       - name: Run zizmor
         uses: zizmorcore/zizmor-action@71321a20a9ded102f6e9ce5718a2fcec2c4f70d8 # v0.5.2
         with:
