@@ -3,29 +3,11 @@ name: Build (.NET)
 on:
   push:
     branches: [main]
-    paths:
-      - "**/*.cs"
-      - "**/*.csproj"
-      - "**/*.slnx"
-      - "Directory.Build.*"
-      - "Directory.Packages.props"
-      - "global.json"
-      - "**/packages.lock.json"
-      - "mise.toml"
-      - "mise.ci.toml"
   pull_request:
     types: [opened, synchronize, reopened]
     branches: [main]
-    paths:
-      - "**/*.cs"
-      - "**/*.csproj"
-      - "**/*.slnx"
-      - "Directory.Build.*"
-      - "Directory.Packages.props"
-      - "global.json"
-      - "**/packages.lock.json"
-      - "mise.toml"
-      - "mise.ci.toml"
+# No paths filter: when the build is a required check, a PR that never
+# triggers it waits on that check forever and cannot merge.
 
 permissions: {}
 
