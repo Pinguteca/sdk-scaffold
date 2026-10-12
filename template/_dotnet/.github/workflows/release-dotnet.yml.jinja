@@ -60,8 +60,9 @@ jobs:
           GITHUB_TOKEN: {{ '${{ steps.octo-sts.outputs.token }}' }}
       - name: Resolve version from tag
         id: version
+        env:
+          TAG: {{ '${{ github.ref_name }}' }}
         run: |
-          TAG="{{ '${{ github.ref_name }}' }}"
           echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
       - name: Restore
         env:
@@ -106,10 +107,12 @@ jobs:
         with:
           user: {{ '${{ env.NUGET_USER }}' }}
       - name: Push to NuGet.org
+        env:
+          NUGET_API_KEY: {{ '${{ steps.nuget-login.outputs.NUGET_API_KEY }}' }}
         run: |
           dotnet nuget push "out/packages/*.nupkg" \
             --source "https://api.nuget.org/v3/index.json" \
-            --api-key "{{ '${{ steps.nuget-login.outputs.NUGET_API_KEY }}' }}" \
+            --api-key "${NUGET_API_KEY}" \
             --skip-duplicate
       # GitHub releases on org-immutable repos cannot have assets
       # deleted, so softprops's delete-and-replace flow fails on

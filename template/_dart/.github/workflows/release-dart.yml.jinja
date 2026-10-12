@@ -58,8 +58,9 @@ jobs:
           GITHUB_TOKEN: {{ '${{ steps.octo-sts.outputs.token }}' }}
       - name: Resolve version from tag
         id: version
+        env:
+          TAG: {{ '${{ github.ref_name }}' }}
         run: |
-          TAG="{{ '${{ github.ref_name }}' }}"
           echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
       - name: Stamp pubspec version
         env:
