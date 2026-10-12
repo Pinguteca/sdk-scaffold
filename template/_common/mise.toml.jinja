@@ -18,11 +18,11 @@ task.source_freshness_hash_contents = true
 # pinning) lives in mise.dev.toml. kingfisher sits here because the
 # secret-scan workflow runs `mise run secret:scan` under MISE_ENV=ci.
 "github:mongodb/kingfisher" = "2.10.0"
-cocogitto = "6.5.0"
-syft = "1.42.4"
+cocogitto = "7.0.0"
+syft = "1.54.0"
 {% if has_go %}
-go = "1.26.2"
-golangci-lint = "2.11.4"
+go = "1.26.6"
+golangci-lint = "2.12.2"
 {% endif %}
 {% if has_dotnet %}
 dotnet = "10.0.203"
@@ -104,7 +104,7 @@ sources = [
 outputs = ["src/**/bin/**/*", "src/**/obj/**/*"]
 
 [tasks.test]
-run = "dotnet test {{ project_name_pascal }}.slnx"
+run = "dotnet test --solution {{ project_name_pascal }}.slnx"
 description = "Run .NET tests"
 alias = "t"
 sources = [

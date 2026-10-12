@@ -34,13 +34,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
-      id-token: write
-      contents: write
-      pull-requests: write
+      id-token: write # OIDC token for octo-sts to fetch a scoped repo token
+      contents: write # commit optimized images to a feature branch
+      pull-requests: write # open the optimization PR against main
     steps:
 {% if harden_runner %}
       - name: Harden Runner
-        uses: step-security/harden-runner@f808768d1510423e83855289c910610ca9b43176 # v2.17.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
           disable-telemetry: "true"
@@ -52,13 +52,17 @@ jobs:
         with:
           scope: {{ github_owner }}/{{ project_name }}
           identity: img-optimization
+      - name: Optimize Git config for CI
+        run: |
+          git config --global core.compression 0
+          git config --global core.fsync -all
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           token: {{ '${{ steps.octo-sts.outputs.token }}' }}
       - name: Optimize raster images
-        uses: calibreapp/image-actions@1ad9a2ddc5edc551f8f09fdf94d949b45c2f3c8d # v1.1.1
+        uses: calibreapp/image-actions@9d037c06280028c110ff61c433ad4dc7d33c3c43 # 1.5.0
         with:
           githubToken: {{ '${{ steps.octo-sts.outputs.token }}' }}
           jpegQuality: "85"

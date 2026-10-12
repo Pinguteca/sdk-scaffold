@@ -27,11 +27,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
-      security-events: write
+      security-events: write # zizmor and actionlint upload SARIF to code scanning
+      id-token: write # OIDC token for octo-sts to fetch a scoped repo token
     steps:
 {% if harden_runner %}
       - name: Harden Runner
-        uses: step-security/harden-runner@f808768d1510423e83855289c910610ca9b43176 # v2.17.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
           disable-telemetry: "true"
@@ -41,8 +42,14 @@ jobs:
         run: |
           git config --global core.compression 0
           git config --global core.fsync -all
+      - name: Obtain token
+        id: octo-sts
+        uses: octo-sts/action@f603d3be9d8dd9871a265776e625a27b00effe05 # v1.1.1
+        with:
+          scope: {{ github_owner }}/{{ project_name }}
+          identity: lint-gha
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           sparse-checkout: |
@@ -50,9 +57,10 @@ jobs:
             .github/zizmor.yml
           sparse-checkout-cone-mode: false
           filter: "blob:none"
+          token: {{ '${{ steps.octo-sts.outputs.token }}' }}
       - name: Run zizmor
-        uses: zizmorcore/zizmor-action@71321a20a9ded102f6e9ce5718a2fcec2c4f70d8 # v0.5.2
+        uses: zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482 # v0.6.4
         with:
           config: .github/zizmor.yml
       - name: Run actionlint via reviewdog
-        uses: reviewdog/action-actionlint@6fb7acc99f4a1008869fa8a0f09cfca740837d9d # v1.72.0
+        uses: reviewdog/action-actionlint@1758727be30241166609dad4c97588b6ad411f32 # v1.79.1
