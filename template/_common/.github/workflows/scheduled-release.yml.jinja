@@ -38,12 +38,10 @@ jobs:
         with:
           fetch-depth: 0
           filter: "blob:none"
-          persist-credentials: false
-      - name: Configure git remote
-        env:
-          GH_TOKEN: {{ '${{ steps.octo-sts.outputs.token }}' }}
-        run: |
-          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/{{ github_owner }}/{{ project_name }}.git"
+          # cog bump pushes the version commit and tag, so keep the scoped
+          # token (not GITHUB_TOKEN) in the checkout's git config.
+          persist-credentials: true
+          token: {{ '${{ steps.octo-sts.outputs.token }}' }}
       - name: Install mise and tools
         uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4.0.1
         with:
