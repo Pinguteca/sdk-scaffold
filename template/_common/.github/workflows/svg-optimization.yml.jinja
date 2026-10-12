@@ -21,7 +21,7 @@ jobs:
     name: Detect SVG changes
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: read # checkout
     outputs:
       changed: {{ '${{ steps.filter.outputs.svg }}' }}
     steps:
@@ -48,8 +48,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
-      id-token: write
-      contents: write
+      id-token: write # OIDC token for octo-sts to fetch a scoped repo token
+      contents: write # commit optimized SVGs back to the branch
     steps:
 {% if harden_runner %}
       - name: Harden Runner

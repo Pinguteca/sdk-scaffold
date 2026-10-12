@@ -21,8 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
-      id-token: write
-      contents: write
+      id-token: write # octo-sts and cosign keyless signing
+      contents: write # gh release create writes the GitHub Release
     outputs:
       hashes: {{ '${{ steps.hash.outputs.hashes }}' }}
     steps:
@@ -112,9 +112,9 @@ jobs:
     name: SLSA provenance
     needs: release
     permissions:
-      actions: read
-      id-token: write
-      contents: write
+      actions: read # SLSA generator reads this run's metadata
+      id-token: write # OIDC token signs the provenance
+      contents: write # upload the provenance to the GitHub Release
     uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
     with:
       base64-subjects: "{{ '${{ needs.release.outputs.hashes }}' }}"

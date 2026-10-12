@@ -34,9 +34,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
-      id-token: write
-      contents: write
-      pull-requests: write
+      id-token: write # OIDC token for octo-sts to fetch a scoped repo token
+      contents: write # commit optimized images to a feature branch
+      pull-requests: write # open the optimization PR against main
     steps:
 {% if harden_runner %}
       - name: Harden Runner

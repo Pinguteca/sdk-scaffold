@@ -27,8 +27,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
-      security-events: write
-      id-token: write
+      security-events: write # zizmor and actionlint upload SARIF to code scanning
+      id-token: write # OIDC token for octo-sts to fetch a scoped repo token
     steps:
 {% if harden_runner %}
       - name: Harden Runner

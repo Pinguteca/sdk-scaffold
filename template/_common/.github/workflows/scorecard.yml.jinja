@@ -18,8 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
-      id-token: write
-      security-events: write
+      id-token: write # OIDC token signs the published Scorecard results
+      security-events: write # upload SARIF findings to code scanning
     steps:
 {% if harden_runner %}
       - name: Harden Runner
