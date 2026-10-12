@@ -14,10 +14,11 @@ disable_backends = ["asdf", "vfox", "ubi"]
 task.source_freshness_hash_contents = true
 
 [tools]
+# Tools shared by local dev and CI. Local-only tooling (git hooks, action
+# pinning) lives in mise.dev.toml. kingfisher sits here because the
+# secret-scan workflow runs `mise run secret:scan` under MISE_ENV=ci.
 "github:mongodb/kingfisher" = "2.10.0"
 cocogitto = "6.5.0"
-pinact = "3.9.2"
-prek = "0.3.9"
 syft = "1.42.4"
 {% if has_go %}
 go = "1.26.2"
