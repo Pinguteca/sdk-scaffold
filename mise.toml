@@ -1,0 +1,13 @@
+[settings]
+experimental = true
+minimum_release_age = "7d"
+pin = true
+lockfile = true
+locked = false
+disable_default_registry = true
+disable_backends = ["asdf", "vfox", "ubi"]
+
+[tools]
+# Renders and updates the template; pinned so every maintainer renders the
+# same output.
+copier = "9.18.2"
