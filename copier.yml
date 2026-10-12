@@ -9,7 +9,7 @@
 #   copier update     # later, to pull upstream improvements
 
 _subdirectory: template
-_min_copier_version: "9.4.0"
+_min_copier_version: "9.6.0"
 _envops:
   trim_blocks: true
   lstrip_blocks: true
@@ -165,6 +165,16 @@ _exclude:
   - "{% if not has_dart %}_dart{% endif %}"
   # Public-repo-only workflows (rendered under _common before flattening)
   - "{% if not public_repo %}_common/.github/workflows/scorecard.yml{% endif %}"
+  # Owned by the instance after the first copy: the changelog is generated,
+  # the README is per-instance, and an accepted ADR is immutable. The
+  # root-anchored paths match template versions older than the overlay
+  # layout, which copier renders as the update base.
+  - "{% if _copier_operation == 'update' %}_common/CHANGELOG.md{% endif %}"
+  - "{% if _copier_operation == 'update' %}_common/README.md{% endif %}"
+  - "{% if _copier_operation == 'update' %}_common/docs/adr/0000-bootstrap.md{% endif %}"
+  - "{% if _copier_operation == 'update' %}/CHANGELOG.md{% endif %}"
+  - "{% if _copier_operation == 'update' %}/README.md{% endif %}"
+  - "{% if _copier_operation == 'update' %}/docs/adr/0000-bootstrap.md{% endif %}"
 
 _skip_if_exists:
   - "CHANGELOG.md"
