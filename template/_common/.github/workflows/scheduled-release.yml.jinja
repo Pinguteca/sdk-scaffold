@@ -33,6 +33,10 @@ jobs:
         with:
           scope: {{ github_owner }}/{{ project_name }}
           identity: scheduled-release
+      - name: Optimize Git config for CI
+        run: |
+          git config --global core.compression 0
+          git config --global core.fsync -all
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
