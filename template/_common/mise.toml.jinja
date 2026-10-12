@@ -104,7 +104,7 @@ sources = [
 outputs = ["src/**/bin/**/*", "src/**/obj/**/*"]
 
 [tasks.test]
-run = "dotnet test {{ project_name_pascal }}.slnx"
+run = "dotnet test --solution {{ project_name_pascal }}.slnx"
 description = "Run .NET tests"
 alias = "t"
 sources = [

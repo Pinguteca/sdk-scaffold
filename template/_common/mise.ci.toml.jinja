@@ -72,13 +72,10 @@ sources = [
 outputs = ["src/**/bin/Release/**/*"]
 
 [tasks."ci:test"]
-# TUnit (or any Microsoft Testing Platform-backed runner) on .NET 10 SDK
-# rejects the legacy `dotnet test --logger trx` path. Invoke the test
-# project as the executable it is. The project path uses
-# `test_project_name` from the copier answers so consumers can match the
-# NuGet package id rather than the repo's PascalCase name.
-run = "dotnet run --project tests/{{ test_project_name }}.Tests --configuration Release --no-build -- --report-trx --coverage"
-description = "Run tests via MTP with TRX report and coverage"
+# global.json selects Microsoft.Testing.Platform, so .NET 10's `dotnet test`
+# runs every MTP test project in the solution with native TRX and coverage.
+run = "dotnet test --solution {{ project_name_pascal }}.slnx --configuration Release --no-build --report-trx --coverage"
+description = "Run every test project in the solution with TRX and coverage"
 
 [tasks."ci:format-check"]
 run = "dotnet format {{ project_name_pascal }}.slnx --verify-no-changes"
