@@ -1,0 +1,40 @@
+# Versions the template itself. Instances track these tags: copier update
+# moves to the latest one, and Renovate's copier manager compares an
+# instance's _commit against them to open update PRs.
+tag_prefix = "v"
+from_latest_tag = true
+ignore_merge_commits = true
+ignore_fixup_commits = true
+disable_changelog = false
+disable_bump_commit = false
+branch_whitelist = ["main"]
+skip_ci = "[skip ci]"
+skip_untracked = true
+# cog creates a lightweight tag; replace it with an annotated one so the git
+# config's tag signing applies. Pushing stays a manual step.
+post_bump_hooks = ["git tag -f -a {{version_tag}} -m {{version_tag}}"]
+
+[git_hooks]
+
+[commit_types]
+# Most template changes are CI, build and tooling ones that instances pick up
+# on update, so they release as patches and appear in the changelog.
+ci       = { changelog_title = "CI", bump_patch = true }
+build    = { changelog_title = "Build", bump_patch = true }
+chore    = { changelog_title = "", omit_from_changelog = true }
+docs     = { changelog_title = "", omit_from_changelog = true }
+refactor = { changelog_title = "", omit_from_changelog = true }
+style    = { changelog_title = "", omit_from_changelog = true }
+test     = { changelog_title = "", omit_from_changelog = true }
+
+[changelog]
+path = "CHANGELOG.md"
+template = "remote"
+remote = "github.com"
+repository = "sdk-scaffold"
+owner = "Pinguteca"
+authors = [
+  { username = "Pinguladora", signature = "Pinguladora" },
+]
+
+[bump_profiles]
