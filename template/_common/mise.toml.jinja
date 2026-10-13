@@ -30,6 +30,14 @@ dotnet = "10.0.203"
 {% if has_dart %}
 dart = "3.12.1"
 {% endif %}
+{% if has_go %}
+
+[env]
+# Build with the Go mise installed. Under the default GOTOOLCHAIN=auto, a
+# go.work or go.mod asking for a newer Go makes the go command download and
+# run that toolchain instead, outside the mise pin and lock.
+GOTOOLCHAIN = "local"
+{% endif %}
 
 [tasks."secret:scan"]
 run = "kingfisher scan . --no-validate --redact --format json --output kingfisher-results.json"
