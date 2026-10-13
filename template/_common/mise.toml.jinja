@@ -12,6 +12,11 @@ disable_backends = ["asdf", "vfox", "ubi"]
 # Decide task freshness by hashing source contents, not mtimes. A fresh checkout
 # resets mtimes, so mtime comparison would rerun tasks needlessly.
 task.source_freshness_hash_contents = true
+{% if has_dotnet %}
+# The dotnet command picks its SDK from global.json, so mise reads the same
+# file instead of keeping a second pin that could drift from it.
+idiomatic_version_file_enable_tools = ["dotnet"]
+{% endif %}
 
 [tools]
 # Tools shared by local dev and CI. Local-only tooling (git hooks, action
@@ -23,9 +28,6 @@ syft = "1.54.0"
 {% if has_go %}
 go = "1.26.6"
 golangci-lint = "2.12.2"
-{% endif %}
-{% if has_dotnet %}
-dotnet = "10.0.203"
 {% endif %}
 {% if has_dart %}
 dart = "3.12.1"
