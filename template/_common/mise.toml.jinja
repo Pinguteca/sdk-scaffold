@@ -22,7 +22,7 @@ idiomatic_version_file_enable_tools = ["dotnet"]
 # Tools shared by local dev and CI. Local-only tooling (git hooks, action
 # pinning) lives in mise.dev.toml. kingfisher sits here because the
 # secret-scan workflow runs `mise run secret:scan` under MISE_ENV=ci.
-"github:mongodb/kingfisher" = "2.10.0"
+kingfisher = "2.10.0"
 cocogitto = "7.0.0"
 syft = "1.54.0"
 {% if has_go %}
