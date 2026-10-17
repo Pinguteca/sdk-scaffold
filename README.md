@@ -31,7 +31,9 @@ language overlays.
 uv tool install copier   # or pipx, pip, brew
 
 # Generate
-copier copy gh:Pinguteca/sdk-scaffold ./my-sdk
+# Use the full URL, not gh:: copier records it in .copier-answers.yml,
+# and Renovate cannot resolve the gh: shorthand when it checks for updates.
+copier copy https://github.com/Pinguteca/sdk-scaffold.git ./my-sdk
 cd my-sdk
 git init && git add . && git commit -m "chore: bootstrap from sdk-scaffold"
 ```
