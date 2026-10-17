@@ -11,3 +11,13 @@ disable_backends = ["asdf", "vfox", "ubi"]
 # Renders and updates the template; pinned so every maintainer renders the
 # same output.
 copier = "9.18.2"
+# Versions the template from its conventional commits (cog.toml).
+cocogitto = "7.0.0"
+
+[tasks.bump]
+run = "cog bump --auto"
+description = "Tag the next template version from conventional commits"
+
+[tasks."bump:dry"]
+run = "cog bump --auto --dry-run"
+description = "Print the next template version without tagging"
