@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [v0.1.1](https://github.com/Pinguteca/sdk-scaffold/compare/bc03b30558b553ddfc35650890884afa8c66c29a..v0.1.1) - 2026-10-18
+#### Build
+- (**cog**) create annotated tags without a shell hook - ([4c7da47](https://github.com/Pinguteca/sdk-scaffold/commit/4c7da477ddcef4c5ea430ce3b09859aa447a9fff)) - [@Pinguladora](https://github.com/Pinguladora)
+- (**cog**) version the template with tags (#19) - ([bc03b30](https://github.com/Pinguteca/sdk-scaffold/commit/bc03b30558b553ddfc35650890884afa8c66c29a)) - [@Pinguladora](https://github.com/Pinguladora)
+- (**copier**) keep the docs index and pubspec out of updates (#20) - ([6b5fc07](https://github.com/Pinguteca/sdk-scaffold/commit/6b5fc07ed1fe4789349dc20dd73a1d171b33614e)) - [@Pinguladora](https://github.com/Pinguladora)
+- (**copier**) keep the docs index and pubspec out of updates (#20) - ([e84996d](https://github.com/Pinguteca/sdk-scaffold/commit/e84996de4681e37540387302086993f8a012d344)) - [@Pinguladora](https://github.com/Pinguladora)
+
+- - -
+
 ## [v0.1.0](https://github.com/Pinguteca/sdk-scaffold/compare/26e9f101c4a5432e816006f0cda31f80d061a09e..v0.1.0) - 2026-10-17
 #### Features
 - (**template**) add dart language overlay - ([aca1d7f](https://github.com/Pinguteca/sdk-scaffold/commit/aca1d7fe68ced10a4a5466e5a687bf483b50ec1a)) - [@Pinguladora](https://github.com/Pinguladora)
