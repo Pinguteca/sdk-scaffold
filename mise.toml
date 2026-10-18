@@ -15,7 +15,9 @@ copier = "9.18.2"
 cocogitto = "7.0.0"
 
 [tasks.bump]
-run = "cog bump --auto"
+# --annotated makes cog create an annotated tag itself. cog runs hooks through
+# `sh -c`, which a plain Windows shell lacks, so a post-bump hook cannot do it.
+run = 'cog bump --auto --annotated "Template release"'
 description = "Tag the next template version from conventional commits"
 
 [tasks."bump:dry"]

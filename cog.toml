@@ -10,9 +10,6 @@ disable_bump_commit = false
 branch_whitelist = ["main"]
 skip_ci = "[skip ci]"
 skip_untracked = true
-# cog creates a lightweight tag; replace it with an annotated one so the git
-# config's tag signing applies. Pushing stays a manual step.
-post_bump_hooks = ["git tag -f -a {{version_tag}} -m {{version_tag}}"]
 
 [git_hooks]
 
