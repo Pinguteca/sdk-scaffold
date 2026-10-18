@@ -6,7 +6,7 @@ sdk-scaffold template plus any project-specific defaults this repo adds.
 
 ## Contents
 
-- `adr/` — Architecture Decision Records. Each ADR records a default with
+- `adr/` - Architecture Decision Records. Each ADR records a default with
   Context / Decision / Consequences / Revisit-when sections.
 
 ## When to add an ADR
