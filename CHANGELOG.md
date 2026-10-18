@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [v0.1.2](https://github.com/Pinguteca/sdk-scaffold/compare/67e05a240be24e7fdc5ec34036e1508775491b67..v0.1.2) - 2026-10-18
+#### CI
+- (**gha**) skip builds that no change needs - ([f5af3c1](https://github.com/Pinguteca/sdk-scaffold/commit/f5af3c19ee7c7dba185a5fc247c644e3d1fda565)) - [@Pinguladora](https://github.com/Pinguladora)
+- (**gha**) run checks on lockfile commits - ([6bc963a](https://github.com/Pinguteca/sdk-scaffold/commit/6bc963ab5f763a9089e83b9319157b7a51cfd559)) - [@Pinguladora](https://github.com/Pinguladora)
+- (**gha**) only fix lockfile drift on pull requests - ([67e05a2](https://github.com/Pinguteca/sdk-scaffold/commit/67e05a240be24e7fdc5ec34036e1508775491b67)) - [@Pinguladora](https://github.com/Pinguladora)
+
+- - -
+
 ## [v0.1.1](https://github.com/Pinguteca/sdk-scaffold/compare/bc03b30558b553ddfc35650890884afa8c66c29a..v0.1.1) - 2026-10-18
 #### Build
 - (**cog**) create annotated tags without a shell hook - ([4c7da47](https://github.com/Pinguteca/sdk-scaffold/commit/4c7da477ddcef4c5ea430ce3b09859aa447a9fff)) - [@Pinguladora](https://github.com/Pinguladora)
