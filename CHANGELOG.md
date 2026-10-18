@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## [v0.1.3](https://github.com/Pinguteca/sdk-scaffold/compare/78706895e7e16939ecc0cb7474db1ef158c848f6..v0.1.3) - 2026-10-18
+#### CI
+- (**gha**) keep advisory checks from rewriting the lockfile - ([7870689](https://github.com/Pinguteca/sdk-scaffold/commit/78706895e7e16939ecc0cb7474db1ef158c848f6)) - [@Pinguladora](https://github.com/Pinguladora)
+
+- - -
+
 ## [v0.1.2](https://github.com/Pinguteca/sdk-scaffold/compare/67e05a240be24e7fdc5ec34036e1508775491b67..v0.1.2) - 2026-10-18
 #### CI
 - (**gha**) skip builds that no change needs - ([f5af3c1](https://github.com/Pinguteca/sdk-scaffold/commit/f5af3c19ee7c7dba185a5fc247c644e3d1fda565)) - [@Pinguladora](https://github.com/Pinguladora)
