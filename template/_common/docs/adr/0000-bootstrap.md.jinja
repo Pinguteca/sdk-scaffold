@@ -10,7 +10,7 @@
 This repository was bootstrapped from `Pinguteca/sdk-scaffold` (Copier).
 The cross-cutting layer (mise, Cocogitto, hk, Renovate, GitHub Actions,
 Octo STS, ADR scaffolding) is upstream-managed and updated via
-`copier update`. The decisions below are *inherited* — they were made in
+`copier update`. The decisions below are *inherited*: they were made in
 the scaffold and are recorded here so this repo's contributors can find them
 without having to dig through the template repo.
 
@@ -47,7 +47,7 @@ without having to dig through the template repo.
 
 ### Negative
 
-- Bumping a shared default requires a `copier update` round trip — small
+- Bumping a shared default requires a `copier update` round trip; small
   drift between scaffold and repo accumulates if updates are skipped for long.
 - The mise lockfile must be committed; without it the "pin once" promise
   breaks for collaborators.
