@@ -70,11 +70,18 @@ jobs:
         run: |
           git add -- .github/actions.lock.json
           git diff --cached --quiet && exit 0
+          # Never commit twice in a row: if the last commit already regenerated
+          # the lockfile and it still drifts, stop instead of looping.
+          if [ "$(git log -1 --format=%s)" = "ci: regenerate .github/actions.lock.json" ]; then
+            echo "::error::lockfile still drifts after a regeneration commit"
+            exit 1
+          fi
           # Renovate ignores commits from this exact address (gitIgnoredAuthors)
-          # and keeps managing its branch after the lockfile commit.
+          # and keeps managing its branch after the lockfile commit. No [skip ci]:
+          # the head commit must run the required checks.
           git -c user.name="github-actions[bot]" \
             -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
-            commit -m "ci: regenerate .github/actions.lock.json [skip ci]"
+            commit -m "ci: regenerate .github/actions.lock.json"
           auth=$(printf 'x-access-token:%s' "$TOKEN" | base64 -w0)
           echo "::add-mask::${auth}"
           git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic ${auth}" \
